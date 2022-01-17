@@ -111,7 +111,7 @@ public class ArenaListener
 
     private EnumSet<EntityType> excludeFromRetargeting;
 
-    private HashMap<Integer, Entity> lastKnownPlayerTargets;
+    private HashMap<Integer, Player> lastKnownPlayerTargets;
 
     public ArenaListener(Arena arena, MobArena plugin) {
         this.plugin = plugin;
@@ -854,8 +854,14 @@ public class ArenaListener
     }
 
     private void onMonsterTarget(EntityTargetEvent event, Entity monster, Entity target) {
-        if (!lastKnownPlayerTargets.containsKey(monster.getEntityId()))
-            lastKnownPlayerTargets.put(monster.getEntityId(), target);
+        int monsterId = monster.getEntityId();
+        Player playerTarget = null;
+
+        if(target instanceof Player)
+            playerTarget = (Player)target;
+        //only store player targets, not pets
+        if (!lastKnownPlayerTargets.containsKey(monsterId))
+            lastKnownPlayerTargets.put(monsterId, playerTarget);
 
         // Null means we lost our target or the target died, so find a new one
         if (target == null) {
@@ -864,8 +870,10 @@ public class ArenaListener
                 return;
             }
 
-            lastKnownPlayerTargets.put(monster.getEntityId(), MAUtils.getClosestPlayer(plugin, monster, arena, lastKnownPlayerTargets.get(monster.getEntityId())));
-            event.setTarget((Player)lastKnownPlayerTargets.get(monster.getEntityId()));
+            Player closestPlayer = MAUtils.getClosestPlayer(
+                    plugin, monster, arena, lastKnownPlayerTargets.get(monsterId));
+            lastKnownPlayerTargets.put(monsterId, closestPlayer);
+            event.setTarget(closestPlayer);
 
             return;
         }
@@ -883,7 +891,9 @@ public class ArenaListener
             event.setCancelled(true);
         }
 
-        lastKnownPlayerTargets.put(monster.getEntityId(), target);
+        //don't erase last known target
+        if(playerTarget != null)
+            lastKnownPlayerTargets.put(monster.getEntityId(), playerTarget);
     }
 
     private void onForeignTarget(EntityTargetEvent event, Entity target) {
