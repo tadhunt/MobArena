@@ -6,6 +6,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.Bee;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Creeper;
@@ -23,10 +25,7 @@ import org.bukkit.entity.Zombie;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class MACreature {
 
@@ -93,6 +92,7 @@ public class MACreature {
         LivingEntity e = (LivingEntity) world.spawnEntity(loc, type);
         e.setCanPickupItems(false);
         e.getEquipment().setArmorContents(NO_ARMOR);
+        e.getAttribute(Attribute.GENERIC_FOLLOW_RANGE).addModifier(new AttributeModifier(UUID.randomUUID(), "ALWAYS_IN_FOLLOW_RANGE", 50, AttributeModifier.Operation.ADD_NUMBER));
 
         switch (this.name) {
             case "sheep":
