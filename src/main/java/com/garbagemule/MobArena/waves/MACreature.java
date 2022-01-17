@@ -92,7 +92,7 @@ public class MACreature {
         LivingEntity e = (LivingEntity) world.spawnEntity(loc, type);
         e.setCanPickupItems(false);
         e.getEquipment().setArmorContents(NO_ARMOR);
-        e.getAttribute(Attribute.GENERIC_FOLLOW_RANGE).addModifier(new AttributeModifier(UUID.randomUUID(), "ALWAYS_IN_FOLLOW_RANGE", 50, AttributeModifier.Operation.ADD_NUMBER));
+        //e.getAttribute(Attribute.GENERIC_FOLLOW_RANGE).addModifier(new AttributeModifier(UUID.randomUUID(), "ALWAYS_IN_FOLLOW_RANGE", 50, AttributeModifier.Operation.ADD_NUMBER));
 
         switch (this.name) {
             case "sheep":

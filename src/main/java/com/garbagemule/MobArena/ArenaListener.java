@@ -83,12 +83,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.projectiles.ProjectileSource;
 
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 public class ArenaListener
 {
@@ -116,11 +111,14 @@ public class ArenaListener
 
     private EnumSet<EntityType> excludeFromRetargeting;
 
+    private HashMap<Integer, Entity> lastKnownPlayerTargets;
+
     public ArenaListener(Arena arena, MobArena plugin) {
         this.plugin = plugin;
         this.arena = arena;
         this.region = arena.getRegion();
         this.monsters = arena.getMonsterManager();
+        this.lastKnownPlayerTargets = new HashMap<>();
 
         ConfigurationSection s = arena.getSettings();
         this.softRestore      = s.getBoolean("soft-restore",         false);
@@ -856,13 +854,19 @@ public class ArenaListener
     }
 
     private void onMonsterTarget(EntityTargetEvent event, Entity monster, Entity target) {
+        if (!lastKnownPlayerTargets.containsKey(monster.getEntityId()))
+            lastKnownPlayerTargets.put(monster.getEntityId(), target);
+
         // Null means we lost our target or the target died, so find a new one
         if (target == null) {
             // ... unless the monster is excluded from retargeting
             if (excludeFromRetargeting.contains(monster.getType())) {
                 return;
             }
-            event.setTarget(MAUtils.getClosestPlayer(plugin, monster, arena));
+
+            lastKnownPlayerTargets.put(monster.getEntityId(), MAUtils.getClosestPlayer(plugin, monster, arena, lastKnownPlayerTargets.get(monster.getEntityId())));
+            event.setTarget((Player)lastKnownPlayerTargets.get(monster.getEntityId()));
+
             return;
         }
 
@@ -878,6 +882,8 @@ public class ArenaListener
         if (!isArenaPlayer(target)) {
             event.setCancelled(true);
         }
+
+        lastKnownPlayerTargets.put(monster.getEntityId(), target);
     }
 
     private void onForeignTarget(EntityTargetEvent event, Entity target) {

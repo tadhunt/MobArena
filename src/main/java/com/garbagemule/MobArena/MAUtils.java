@@ -84,6 +84,7 @@ public class MAUtils
         // Set up the comparison variable and the result.
         double current = Double.POSITIVE_INFINITY;
         Player result = null;
+        Player fallBack = null;
 
         /* Iterate through the ArrayList, and update current and result every
          * time a squared distance smaller than current is found. */
@@ -96,12 +97,61 @@ public class MAUtils
                 continue;
             }
 
+            fallBack = p;
+
             double dist = distanceSquared(plugin, p, e.getLocation());
             if (dist < current && dist < 256D) {
                 current = dist;
                 result = p;
+                plugin.getLogger().info("closest player: " + result);
             }
         }
+        if (result == null) {
+            plugin.getLogger().info("using fallback: " + fallBack);
+            return fallBack;
+        }
+        plugin.getLogger().info("using result: " + result);
+        return result;
+    }
+    public static Player getClosestPlayer(MobArena plugin, Entity e, Arena arena, Entity t) {
+        // Set up the comparison variable and the result.
+        double current = Double.POSITIVE_INFINITY;
+        Player result = null;
+        Player fallBack = null;
+        Entity lastKnownTarget = null;
+
+        /* Iterate through the ArrayList, and update current and result every
+         * time a squared distance smaller than current is found. */
+        List<Player> players = new ArrayList<>(arena.getPlayersInArena());
+        for (Player p : players) {
+            if (!arena.getWorld().equals(p.getWorld())) {
+                plugin.getLogger().info("Player '" + p.getName() + "' is not in the right world. Kicking...");
+                p.kickPlayer("[MobArena] Cheater! (Warped out of the arena world.)");
+                arena.getMessenger().tell(p, "You warped out of the arena world.");
+                continue;
+            }
+
+            lastKnownTarget = t;
+            fallBack = p;
+
+            double dist = distanceSquared(plugin, p, e.getLocation());
+            if (dist < current && dist < 256D) {
+                current = dist;
+                result = p;
+                plugin.getLogger().info("closest player: " + result);
+            }
+        }
+
+        if (result == null) {
+            if (lastKnownTarget != null) {
+                plugin.getLogger().info("using last known: " + fallBack);
+                return (Player)lastKnownTarget;
+            }
+            plugin.getLogger().info("using fallback: " + fallBack);
+            return fallBack;
+        }
+
+        plugin.getLogger().info("using result: " + result);
         return result;
     }
 
