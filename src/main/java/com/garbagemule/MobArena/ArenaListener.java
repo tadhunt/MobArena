@@ -27,22 +27,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.AbstractHorse;
-import org.bukkit.entity.AnimalTamer;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Horse;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Mob;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
-import org.bukkit.entity.Slime;
-import org.bukkit.entity.Snowman;
-import org.bukkit.entity.TNTPrimed;
-import org.bukkit.entity.ThrownPotion;
-import org.bukkit.entity.Vehicle;
+import org.bukkit.entity.*;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockBurnEvent;
@@ -409,6 +394,17 @@ public class ArenaListener
         if (reason == SpawnReason.BUILD_IRONGOLEM || reason == SpawnReason.BUILD_SNOWMAN) {
             event.setCancelled(false);
             monsters.addGolem(event.getEntity());
+            return;
+        }
+
+        // Allow player to use pufferfish spawn eggs
+        if (reason == SpawnReason.SPAWNER_EGG) {
+            if (event.getEntityType() == EntityType.PUFFERFISH) {
+                event.setCancelled(false);
+                monsters.addMonster(event.getEntity());
+            } else {
+                event.setCancelled(true);
+            }
             return;
         }
 
@@ -798,8 +794,13 @@ public class ArenaListener
             }
         }
         else if (monsters.getMonsters().contains(damager)) {
-            if (!monsterInfight)
-                event.setCancelled(true);
+            if (!monsterInfight) {
+                if (damager.getType() == EntityType.PUFFERFISH) {
+                    event.setCancelled(false);
+                } else {
+                    event.setCancelled(true);
+                }
+            }
         }
     }
 
