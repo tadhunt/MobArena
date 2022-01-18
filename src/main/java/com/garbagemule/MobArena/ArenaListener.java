@@ -855,13 +855,6 @@ public class ArenaListener
 
     private void onMonsterTarget(EntityTargetEvent event, Entity monster, Entity target) {
         int monsterId = monster.getEntityId();
-        Player playerTarget = null;
-
-        if(target instanceof Player)
-            playerTarget = (Player)target;
-        //only store player targets, not pets
-        if (!lastKnownPlayerTargets.containsKey(monsterId))
-            lastKnownPlayerTargets.put(monsterId, playerTarget);
 
         // Null means we lost our target or the target died, so find a new one
         if (target == null) {
@@ -870,8 +863,12 @@ public class ArenaListener
                 return;
             }
 
+            Player lastTarget = null;
+            if(lastKnownPlayerTargets.containsKey(monsterId))
+                lastTarget = lastKnownPlayerTargets.get(monsterId);
+
             Player closestPlayer = MAUtils.getClosestPlayer(
-                    plugin, monster, arena, lastKnownPlayerTargets.get(monsterId));
+                    plugin, monster, arena, lastTarget);
             lastKnownPlayerTargets.put(monsterId, closestPlayer);
             event.setTarget(closestPlayer);
 
@@ -890,10 +887,8 @@ public class ArenaListener
         if (!isArenaPlayer(target)) {
             event.setCancelled(true);
         }
-
-        //don't erase last known target
-        if(playerTarget != null)
-            lastKnownPlayerTargets.put(monster.getEntityId(), playerTarget);
+        else
+            lastKnownPlayerTargets.put(monsterId, (Player)target);
     }
 
     private void onForeignTarget(EntityTargetEvent event, Entity target) {

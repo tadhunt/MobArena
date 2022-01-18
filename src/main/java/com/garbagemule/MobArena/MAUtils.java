@@ -78,7 +78,6 @@ public class MAUtils
         // Set up the comparison variable and the result.
         double current = Double.POSITIVE_INFINITY;
         Player result = null;
-        Player fallBack = null;
 
         /* Iterate through the ArrayList, and update current and result every
          * time a squared distance smaller than current is found. */
@@ -91,28 +90,21 @@ public class MAUtils
                 continue;
             }
 
-            fallBack = p;
-
             double dist = distanceSquared(plugin, p, e.getLocation());
             if (dist < current && dist < 256D) {
                 current = dist;
                 result = p;
-                plugin.getLogger().info("closest player: " + result);
             }
         }
-        if (result == null) {
-            plugin.getLogger().info("using fallback: " + fallBack);
-            return fallBack;
-        }
-        plugin.getLogger().info("using result: " + result);
         return result;
     }
+
     public static Player getClosestPlayer(MobArena plugin, Entity e, Arena arena, Player t) {
         Player result = getClosestPlayer(plugin, e, arena);
         Player fallBack = null;
 
         if (result == null) {
-            if (t != null) {
+            if (t != null && arena.getPlayersInArena().contains(t)) {
                 plugin.getLogger().info("using last known: " + t.getDisplayName());
                 return t;
             }
@@ -123,7 +115,6 @@ public class MAUtils
             plugin.getLogger().info("using random fallback: " + fallBack.getDisplayName());
             return fallBack;
         }
-
         plugin.getLogger().info("using result: " + result);
         return result;
     }
