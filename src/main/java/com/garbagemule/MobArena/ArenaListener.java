@@ -27,7 +27,22 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.*;
+import org.bukkit.entity.AbstractHorse;
+import org.bukkit.entity.AnimalTamer;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Horse;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Mob;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
+import org.bukkit.entity.Slime;
+import org.bukkit.entity.Snowman;
+import org.bukkit.entity.TNTPrimed;
+import org.bukkit.entity.ThrownPotion;
+import org.bukkit.entity.Vehicle;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockBurnEvent;
@@ -125,7 +140,6 @@ public class ArenaListener
         this.arena = arena;
         this.region = arena.getRegion();
         this.monsters = arena.getMonsterManager();
-        this.lastKnownPlayerTargets = new HashMap<>();
 
         ConfigurationSection s = arena.getSettings();
         this.softRestore      = s.getBoolean("soft-restore",         false);
@@ -150,6 +164,8 @@ public class ArenaListener
             EntityType.ELDER_GUARDIAN,
             EntityType.GUARDIAN
         );
+
+        this.lastKnownPlayerTargets = new HashMap<>();
     }
 
     void pvpActivate() {
@@ -881,7 +897,6 @@ public class ArenaListener
                 return;
             }
             event.setTarget(MAUtils.getClosestPlayer(plugin, monster, arena));
-
             return;
         }
 
