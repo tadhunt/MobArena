@@ -99,15 +99,18 @@ public class MAUtils
         return result;
     }
 
-    public static Player getClosestPlayer(MobArena plugin, Entity e, Arena arena, Player t) {
+    public static Player getClosestPlayer(MobArena plugin, Entity e, Arena arena, Player target) {
+        // Try getting closest player to monster by running original method
         Player result = getClosestPlayer(plugin, e, arena);
         Player fallBack = null;
 
         if (result == null) {
-            if (t != null && arena.getPlayersInArena().contains(t)) {
-                plugin.getLogger().info("using last known: " + t.getDisplayName());
-                return t;
+            // If closest player returns null, return last known player target
+            if (target != null && arena.getPlayersInArena().contains(target)) {
+                plugin.getLogger().info("using last known: " + target.getDisplayName());
+                return target;
             }
+            // Use a random arena player as a fallback if lastKnownPlayer dies or leaves
             List<Player> players = new ArrayList<>(arena.getPlayersInArena());
             Random rand = new Random();
             int randomPlayer = rand.nextInt(players.size());

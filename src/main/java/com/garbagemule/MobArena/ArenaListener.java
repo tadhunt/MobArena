@@ -83,7 +83,13 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.projectiles.ProjectileSource;
 
-import java.util.*;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
 
 public class ArenaListener
 {
@@ -98,6 +104,7 @@ public class ArenaListener
             protect;
     private boolean monsterExp,
             monsterInfight,
+            monsterTrack,
             pvpOn,               // pvp-enabled in config
             pvpEnabled = false,  // activated on first wave
             foodRegen,
@@ -126,6 +133,7 @@ public class ArenaListener
         this.protect          = s.getBoolean("protect",              true);
         this.monsterExp       = s.getBoolean("monster-exp",          false);
         this.monsterInfight   = s.getBoolean("monster-infight",      false);
+        this.monsterTrack     = s.getBoolean("monster-tracks-player",false);
         this.pvpOn            = s.getBoolean("pvp-enabled",          false);
         this.foodRegen        = s.getBoolean("food-regen",           false);
         this.lockFoodLevel    = s.getBoolean("lock-food-level",      true);
@@ -854,23 +862,25 @@ public class ArenaListener
     }
 
     private void onMonsterTarget(EntityTargetEvent event, Entity monster, Entity target) {
-        int monsterId = monster.getEntityId();
-
         // Null means we lost our target or the target died, so find a new one
         if (target == null) {
             // ... unless the monster is excluded from retargeting
             if (excludeFromRetargeting.contains(monster.getType())) {
                 return;
             }
-
-            Player lastTarget = null;
-            if(lastKnownPlayerTargets.containsKey(monsterId))
-                lastTarget = lastKnownPlayerTargets.get(monsterId);
-
-            Player closestPlayer = MAUtils.getClosestPlayer(
-                    plugin, monster, arena, lastTarget);
-            lastKnownPlayerTargets.put(monsterId, closestPlayer);
-            event.setTarget(closestPlayer);
+            // If monsterTrack is on, call overloaded getClosestPlayer
+            // that takes a monster's last known target as a parameter.
+            if (monsterTrack) {
+                Player lastTarget = null;
+                if (lastKnownPlayerTargets.containsKey(monster.getEntityId())) {
+                    lastTarget = lastKnownPlayerTargets.get(monster.getEntityId());
+                }
+                Player closestPlayer = MAUtils.getClosestPlayer(plugin, monster, arena, lastTarget);
+                lastKnownPlayerTargets.put(monster.getEntityId(), closestPlayer);
+                event.setTarget(closestPlayer);
+                return;
+            }
+            event.setTarget(MAUtils.getClosestPlayer(plugin, monster, arena));
 
             return;
         }
@@ -887,8 +897,9 @@ public class ArenaListener
         if (!isArenaPlayer(target)) {
             event.setCancelled(true);
         }
-        else
-            lastKnownPlayerTargets.put(monsterId, (Player)target);
+        else if (monsterTrack) {
+            lastKnownPlayerTargets.put(monster.getEntityId(), (Player) target);
+        }
     }
 
     private void onForeignTarget(EntityTargetEvent event, Entity target) {
