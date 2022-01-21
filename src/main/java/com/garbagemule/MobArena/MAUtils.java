@@ -114,7 +114,6 @@ public class MAUtils
         if (result == null) {
             // If closest player returns null, return last known player target
             if (target != null && arena.getPlayersInArena().contains(target)) {
-                plugin.getLogger().info("using last known: " + target.getDisplayName());
                 return target;
             }
             // Use a random arena player as a fallback if lastKnownPlayer dies or leaves
@@ -122,10 +121,8 @@ public class MAUtils
             Random rand = new Random();
             int randomPlayer = rand.nextInt(players.size());
             fallBack = players.get(randomPlayer);
-            plugin.getLogger().info("using random fallback: " + fallBack.getDisplayName());
             return fallBack;
         }
-        plugin.getLogger().info("using result: " + result);
         return result;
     }
 
