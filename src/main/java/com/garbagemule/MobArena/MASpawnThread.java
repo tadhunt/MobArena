@@ -51,7 +51,6 @@ public class MASpawnThread implements Runnable
     private Long monsterGlowDelay;
 
     private BukkitTask task;
-    private BukkitRunnable monsterVisibility;
 
     /**
      * Create a new monster spawner for the input arena.
@@ -67,17 +66,6 @@ public class MASpawnThread implements Runnable
         this.waveManager = arena.getWaveManager();
         this.monsterManager = arena.getMonsterManager();
         this.createsHealthBar = new CreatesHealthBar(arena.getSettings().getString("boss-health-bar", "none"));
-        this.monsterVisibility = new BukkitRunnable() {
-            @Override
-            public void run() {
-                Set<LivingEntity> monsters = monsterManager.getMonsters();
-                monsters.forEach(monster ->{
-                    if(!monster.isDead()){
-                        monster.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 999999, 0));
-                    }
-                });
-            }
-        };
 
         reset();
     }
@@ -203,14 +191,7 @@ public class MASpawnThread implements Runnable
         Wave w = waveManager.next();
 
         w.announce(arena, wave);
-
         arena.getScoreboard().updateWave(wave);
-
-        if(!monsterVisibility.isCancelled()){
-            monsterVisibility.cancel();
-        }
-        assert monsterVisibility != null;
-        monsterVisibility.runTaskLater(plugin, monsterGlowDelay * 20L);
 
         // Set the players' level to the wave number
         if (wavesAsLevel) {
@@ -251,6 +232,7 @@ public class MASpawnThread implements Runnable
 
                 // Add it to the arena.
                 monsterManager.addMonster(e);
+                monsterManager.addWaveMonster(e);
 
                 // Set the health.
                 int health = (int) Math.max(1D, e.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() * mul);
@@ -299,6 +281,10 @@ public class MASpawnThread implements Runnable
                     default:
                         break;
                 }
+                PotionEffect potionEffect = new PotionEffect(PotionEffectType.GLOWING, 999999, 0);
+                BukkitRunnable runnable = inflictPotionEffect(potionEffect, monsterManager.getWaveMonsters());
+                runnable.runTaskLater(plugin, monsterGlowDelay * 20L);
+                monsterManager.clearWaveMonsters();
             }
         }
     }
@@ -421,5 +407,19 @@ public class MASpawnThread implements Runnable
                 arena.getMessenger().tell(p, Msg.WAVE_REWARD, reward.toString());
             }
         }
+    }
+
+    private BukkitRunnable inflictPotionEffect(PotionEffect potionEffect, Set<LivingEntity> entities){
+        BukkitRunnable runnable = new BukkitRunnable() {
+            @Override
+            public void run() {
+                entities.forEach(entity ->{
+                    if(!entity.isDead()){
+                        entity.addPotionEffect(potionEffect);
+                    }
+                });
+            }
+        };
+        return runnable;
     }
 }

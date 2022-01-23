@@ -18,7 +18,7 @@ import java.util.Set;
 
 public class MonsterManager
 {
-    private Set<LivingEntity> monsters, sheep, golems;
+    private Set<LivingEntity> monsters, waveMonsters, sheep, golems;
     private Map<LivingEntity,MABoss> bosses;
     private Map<LivingEntity,List<ItemStack>> suppliers;
     private Set<LivingEntity> mounts;
@@ -27,6 +27,7 @@ public class MonsterManager
 
     public MonsterManager() {
         this.monsters   = new HashSet<>();
+        this.waveMonsters = new HashSet<>();
         this.sheep      = new HashSet<>();
         this.golems     = new HashSet<>();
         this.bosses     = new HashMap<>();
@@ -38,6 +39,7 @@ public class MonsterManager
 
     public void reset() {
         monsters.clear();
+        waveMonsters.clear();
         sheep.clear();
         golems.clear();
         bosses.clear();
@@ -54,6 +56,7 @@ public class MonsterManager
             .forEach(HealthBar::removeAll);
 
         removeAll(monsters);
+        removeAll(waveMonsters);
         removeAll(sheep);
         removeAll(golems);
         removeAll(bosses.keySet());
@@ -88,13 +91,19 @@ public class MonsterManager
         return monsters;
     }
 
+    public Set<LivingEntity> getWaveMonsters() { return waveMonsters; }
+
     public void addMonster(LivingEntity e) {
         monsters.add(e);
     }
 
+    public void addWaveMonster(LivingEntity e) { waveMonsters.add(e); }
+
     public boolean removeMonster(Entity e) {
         return monsters.remove(e);
     }
+
+    public void clearWaveMonsters() { removeAll(waveMonsters); }
 
     public Set<LivingEntity> getExplodingSheep() {
         return sheep;
