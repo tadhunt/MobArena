@@ -24,11 +24,15 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class MASpawnThread implements Runnable
 {
@@ -44,8 +48,10 @@ public class MASpawnThread implements Runnable
     private boolean waveClear, bossClear, preBossClear, wavesAsLevel;
     private int waveInterval;
     private int nextWaveDelay;
+    private Long monsterGlowDelay;
 
     private BukkitTask task;
+    private BukkitRunnable monsterVisibility;
 
     /**
      * Create a new monster spawner for the input arena.
@@ -61,6 +67,17 @@ public class MASpawnThread implements Runnable
         this.waveManager = arena.getWaveManager();
         this.monsterManager = arena.getMonsterManager();
         this.createsHealthBar = new CreatesHealthBar(arena.getSettings().getString("boss-health-bar", "none"));
+        this.monsterVisibility = new BukkitRunnable() {
+            @Override
+            public void run() {
+                Set<LivingEntity> monsters = monsterManager.getMonsters();
+                monsters.forEach(monster ->{
+                    if(!monster.isDead()){
+                        monster.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 999999, 0));
+                    }
+                });
+            }
+        };
 
         reset();
     }
@@ -79,6 +96,7 @@ public class MASpawnThread implements Runnable
         wavesAsLevel = arena.getSettings().getBoolean("display-waves-as-level", false);
         waveInterval = arena.getSettings().getInt("wave-interval", 3);
         nextWaveDelay = arena.getSettings().getInt("next-wave-delay", 0);
+        monsterGlowDelay = arena.getSettings().getLong("monster-glow-delay", 0L);
     }
 
     public void start() {
@@ -187,6 +205,12 @@ public class MASpawnThread implements Runnable
         w.announce(arena, wave);
 
         arena.getScoreboard().updateWave(wave);
+
+        if(!monsterVisibility.isCancelled()){
+            monsterVisibility.cancel();
+        }
+        assert monsterVisibility != null;
+        monsterVisibility.runTaskLater(plugin, monsterGlowDelay * 20L);
 
         // Set the players' level to the wave number
         if (wavesAsLevel) {
