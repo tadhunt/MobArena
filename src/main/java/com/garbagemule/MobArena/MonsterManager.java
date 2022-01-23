@@ -56,7 +56,6 @@ public class MonsterManager
             .forEach(HealthBar::removeAll);
 
         removeAll(monsters);
-        removeAll(waveMonsters);
         removeAll(sheep);
         removeAll(golems);
         removeAll(bosses.keySet());
@@ -103,7 +102,7 @@ public class MonsterManager
         return monsters.remove(e);
     }
 
-    public void clearWaveMonsters() { removeAll(waveMonsters); }
+    public void clearWaveMonsters() { waveMonsters.clear(); }
 
     public Set<LivingEntity> getExplodingSheep() {
         return sheep;

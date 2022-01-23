@@ -281,12 +281,12 @@ public class MASpawnThread implements Runnable
                     default:
                         break;
                 }
-                PotionEffect potionEffect = new PotionEffect(PotionEffectType.GLOWING, 999999, 0);
-                BukkitRunnable runnable = inflictPotionEffect(potionEffect, monsterManager.getWaveMonsters());
-                runnable.runTaskLater(plugin, monsterGlowDelay * 20L);
-                monsterManager.clearWaveMonsters();
             }
         }
+        PotionEffect potionEffect = new PotionEffect(PotionEffectType.GLOWING, 999999, 0);
+        BukkitRunnable runnable = inflictPotionEffect(potionEffect, monsterManager.getWaveMonsters());
+        runnable.runTaskLater(plugin, monsterGlowDelay * 20L);
+        monsterManager.clearWaveMonsters();
     }
 
     private void handleUpgradeWave(Wave w) {
