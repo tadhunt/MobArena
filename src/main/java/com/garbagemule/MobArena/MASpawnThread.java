@@ -212,6 +212,7 @@ public class MASpawnThread implements Runnable
         World world = arena.getWorld();
         int totalSpawnpoints = spawnpoints.size();
         int index = 0;
+        int waveNumber = waveManager.getWaveNumber();
         double mul = w.getHealthMultiplier();
 
         for (Map.Entry<MACreature, Integer> entry : monsters.entrySet()) {
@@ -232,7 +233,7 @@ public class MASpawnThread implements Runnable
 
                 // Add it to the arena.
                 monsterManager.addMonster(e);
-                monsterManager.addWaveMonster(e);
+                monsterManager.addWaveMonster(e, waveNumber);
 
                 // Set the health.
                 int health = (int) Math.max(1D, e.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() * mul);
@@ -284,9 +285,8 @@ public class MASpawnThread implements Runnable
             }
         }
         PotionEffect potionEffect = new PotionEffect(PotionEffectType.GLOWING, 999999, 0);
-        BukkitRunnable runnable = inflictPotionEffect(potionEffect, monsterManager.getWaveMonsters());
+        BukkitRunnable runnable = inflictPotionEffect(potionEffect, monsterManager.getWaveMonsters(waveManager.getWaveNumber()));
         runnable.runTaskLater(plugin, monsterGlowDelay * 20L);
-        monsterManager.clearWaveMonsters();
     }
 
     private void handleUpgradeWave(Wave w) {

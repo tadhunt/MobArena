@@ -7,18 +7,12 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 public class MonsterManager
 {
-    private Set<LivingEntity> monsters, waveMonsters, sheep, golems;
+    private Set<LivingEntity> monsters, sheep, golems;
+    private Map<Integer, Set<LivingEntity>> waveMonsters;
     private Map<LivingEntity,MABoss> bosses;
     private Map<LivingEntity,List<ItemStack>> suppliers;
     private Set<LivingEntity> mounts;
@@ -27,7 +21,7 @@ public class MonsterManager
 
     public MonsterManager() {
         this.monsters   = new HashSet<>();
-        this.waveMonsters = new HashSet<>();
+        this.waveMonsters = new HashMap<>();
         this.sheep      = new HashSet<>();
         this.golems     = new HashSet<>();
         this.bosses     = new HashMap<>();
@@ -90,19 +84,26 @@ public class MonsterManager
         return monsters;
     }
 
-    public Set<LivingEntity> getWaveMonsters() { return waveMonsters; }
+    public Set<LivingEntity> getWaveMonsters(int wave) { return waveMonsters.get(wave); }
 
     public void addMonster(LivingEntity e) {
         monsters.add(e);
     }
 
-    public void addWaveMonster(LivingEntity e) { waveMonsters.add(e); }
+    public void addWaveMonster(LivingEntity e, int wave) {
+        if(waveMonsters.containsKey(wave)){
+            waveMonsters.get(wave).add(e);
+        }
+        else{
+            Set<LivingEntity> set = new HashSet<>();
+            set.add(e);
+            waveMonsters.put(wave, set);
+        }
+    }
 
     public boolean removeMonster(Entity e) {
         return monsters.remove(e);
     }
-
-    public void clearWaveMonsters() { waveMonsters.clear(); }
 
     public Set<LivingEntity> getExplodingSheep() {
         return sheep;
