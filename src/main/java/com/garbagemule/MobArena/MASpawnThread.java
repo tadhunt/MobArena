@@ -191,6 +191,7 @@ public class MASpawnThread implements Runnable
         Wave w = waveManager.next();
 
         w.announce(arena, wave);
+
         arena.getScoreboard().updateWave(wave);
 
         // Set the players' level to the wave number
@@ -286,10 +287,10 @@ public class MASpawnThread implements Runnable
                 }
             }
         }
-        // Apply a highlighting effect to monsters after monster-glow-delay seconds
+        // Apply a highlighting effect to monsters after monster-glow-delay defined seconds
         if (Math.round(monsterGlowDelay) > 0) {
             PotionEffect effect = PotionEffectParser.parsePotionEffect("glowing", true);
-            BukkitRunnable runnable = monsterGlow(effect, monsterManager.getWaveMonsters(waveManager.getWaveNumber()));
+            BukkitRunnable runnable = addGlowMonsters(effect, monsterManager.getWaveMonsters(waveManager.getWaveNumber()));
             runnable.runTaskLater(plugin, Math.round(monsterGlowDelay) * 20L);
         }
     }
@@ -339,6 +340,20 @@ public class MASpawnThread implements Runnable
         }
 
         return true;
+    }
+
+    private BukkitRunnable addGlowMonsters(PotionEffect potionEffect, Set<LivingEntity> entities){
+        BukkitRunnable runnable = new BukkitRunnable() {
+            @Override
+            public void run() {
+                entities.forEach(entity ->{
+                    if(!entity.isDead()){
+                        entity.addPotionEffect(potionEffect);
+                    }
+                });
+            }
+        };
+        return runnable;
     }
 
     private void removeDeadMonsters() {
@@ -412,19 +427,5 @@ public class MASpawnThread implements Runnable
                 arena.getMessenger().tell(p, Msg.WAVE_REWARD, reward.toString());
             }
         }
-    }
-
-    private BukkitRunnable monsterGlow(PotionEffect potionEffect, Set<LivingEntity> entities){
-        BukkitRunnable runnable = new BukkitRunnable() {
-            @Override
-            public void run() {
-                entities.forEach(entity ->{
-                    if(!entity.isDead()){
-                        entity.addPotionEffect(potionEffect);
-                    }
-                });
-            }
-        };
-        return runnable;
     }
 }
