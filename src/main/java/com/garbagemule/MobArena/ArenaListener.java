@@ -1153,6 +1153,17 @@ public class ArenaListener
         if (event.getClickedBlock().getType() == Material.IRON_BLOCK) {
             handleReadyBlock(p);
         }
+
+        // End rod
+        if (event.getClickedBlock().getType() == Material.END_ROD) {
+            handleReadyBlock(p);
+        }
+
+        // Candle
+        if (event.getClickedBlock().getType() == Material.PURPLE_CANDLE) {
+            handleReadyBlock(p);
+        }
+
         // Sign
         else if (event.getClickedBlock().getState() instanceof Sign) {
             Sign sign = (Sign) event.getClickedBlock().getState();
