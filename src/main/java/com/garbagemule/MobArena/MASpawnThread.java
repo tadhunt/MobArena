@@ -48,7 +48,7 @@ public class MASpawnThread implements Runnable
     private boolean waveClear, bossClear, preBossClear, wavesAsLevel;
     private int waveInterval;
     private int nextWaveDelay;
-    private Long monsterGlowDelay;
+    private long monsterGlowDelay;
 
     private BukkitTask task;
 
