@@ -7,7 +7,14 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 public class MonsterManager
 {
@@ -84,17 +91,19 @@ public class MonsterManager
         return monsters;
     }
 
-    public Set<LivingEntity> getWaveMonsters(int wave) { return waveMonsters.get(wave); }
+    public Set<LivingEntity> getWaveMonsters(int wave) {
+        return waveMonsters.get(wave);
+    }
 
     public void addMonster(LivingEntity e) {
         monsters.add(e);
     }
 
     public void addWaveMonster(LivingEntity e, int wave) {
-        if(waveMonsters.containsKey(wave)){
+        if(waveMonsters.containsKey(wave)) {
             waveMonsters.get(wave).add(e);
         }
-        else{
+        else {
             Set<LivingEntity> set = new HashSet<>();
             set.add(e);
             waveMonsters.put(wave, set);

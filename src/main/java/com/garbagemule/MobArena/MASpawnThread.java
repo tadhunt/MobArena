@@ -9,6 +9,7 @@ import com.garbagemule.MobArena.region.ArenaRegion;
 import com.garbagemule.MobArena.things.ExperienceThing;
 import com.garbagemule.MobArena.things.Thing;
 import com.garbagemule.MobArena.things.ThingPicker;
+import com.garbagemule.MobArena.util.PotionEffectParser;
 import com.garbagemule.MobArena.waves.MABoss;
 import com.garbagemule.MobArena.waves.MACreature;
 import com.garbagemule.MobArena.waves.Wave;
@@ -25,7 +26,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -233,6 +233,8 @@ public class MASpawnThread implements Runnable
 
                 // Add it to the arena.
                 monsterManager.addMonster(e);
+
+                // Add it to the current wave.
                 monsterManager.addWaveMonster(e, waveNumber);
 
                 // Set the health.
@@ -284,9 +286,12 @@ public class MASpawnThread implements Runnable
                 }
             }
         }
-        PotionEffect potionEffect = new PotionEffect(PotionEffectType.GLOWING, 999999, 0);
-        BukkitRunnable runnable = inflictPotionEffect(potionEffect, monsterManager.getWaveMonsters(waveManager.getWaveNumber()));
-        runnable.runTaskLater(plugin, monsterGlowDelay * 20L);
+        // Apply a highlighting effect to monsters after monster-glow-delay seconds
+        if (Math.round(monsterGlowDelay) > 0) {
+            PotionEffect effect = PotionEffectParser.parsePotionEffect("glowing", true);
+            BukkitRunnable runnable = monsterGlow(effect, monsterManager.getWaveMonsters(waveManager.getWaveNumber()));
+            runnable.runTaskLater(plugin, Math.round(monsterGlowDelay) * 20L);
+        }
     }
 
     private void handleUpgradeWave(Wave w) {
@@ -409,7 +414,7 @@ public class MASpawnThread implements Runnable
         }
     }
 
-    private BukkitRunnable inflictPotionEffect(PotionEffect potionEffect, Set<LivingEntity> entities){
+    private BukkitRunnable monsterGlow(PotionEffect potionEffect, Set<LivingEntity> entities){
         BukkitRunnable runnable = new BukkitRunnable() {
             @Override
             public void run() {
