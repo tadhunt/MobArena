@@ -133,6 +133,8 @@ public class ArenaListener
 
     private HashMap<Integer, Player> lastKnownPlayerTargets;
 
+    private List<String> startBlocks;
+
     public ArenaListener(Arena arena, MobArena plugin) {
         this.plugin = plugin;
         this.arena = arena;
@@ -154,6 +156,7 @@ public class ArenaListener
         this.autoIgniteTNT    = s.getBoolean("auto-ignite-tnt",      false);
         this.autoIgniteFuse   = s.getInt("auto-ignite-fuse",         80);
         this.useClassChests   = s.getBoolean("use-class-chests",     false);
+        this.startBlocks      = s.getStringList("start-blocks");
 
         this.classLimits = arena.getClassLimitManager();
 
@@ -1131,6 +1134,9 @@ public class ArenaListener
         if (event.getHand() == EquipmentSlot.OFF_HAND || !event.hasBlock())
             return;
 
+        if(startBlocks.contains(event.getClickedBlock().getType().name().toLowerCase()))
+            handleReadyBlock(p);
+        /*
         // Iron block
         if (event.getClickedBlock().getType() == Material.IRON_BLOCK) {
             handleReadyBlock(p);
@@ -1145,7 +1151,7 @@ public class ArenaListener
         if (event.getClickedBlock().getType() == Material.PURPLE_CANDLE) {
             handleReadyBlock(p);
         }
-
+        */
         // Sign
         else if (event.getClickedBlock().getState() instanceof Sign) {
             Sign sign = (Sign) event.getClickedBlock().getState();
