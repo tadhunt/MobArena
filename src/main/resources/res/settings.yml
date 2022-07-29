@@ -50,4 +50,4 @@ announcer-type: title
 global-join-announce: false
 global-end-announce: false
 show-death-messages: true
-ready-blocks: iron_block, purple_candle, end_rod
+ready-blocks: iron_block, gold_block

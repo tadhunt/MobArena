@@ -95,6 +95,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.projectiles.ProjectileSource;
 
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -133,7 +134,7 @@ public class ArenaListener
 
     private HashMap<Integer, Player> lastKnownPlayerTargets;
 
-    private List<String> startBlocks;
+    private List<String> readyBlocks;
 
     public ArenaListener(Arena arena, MobArena plugin) {
         this.plugin = plugin;
@@ -156,7 +157,8 @@ public class ArenaListener
         this.autoIgniteTNT    = s.getBoolean("auto-ignite-tnt",      false);
         this.autoIgniteFuse   = s.getInt("auto-ignite-fuse",         80);
         this.useClassChests   = s.getBoolean("use-class-chests",     false);
-        this.startBlocks      = s.getStringList("start-blocks");
+
+        this.readyBlocks = Arrays.asList(s.getString("ready-blocks").replaceAll("\\s+","").split(","));
 
         this.classLimits = arena.getClassLimitManager();
 
@@ -1134,24 +1136,10 @@ public class ArenaListener
         if (event.getHand() == EquipmentSlot.OFF_HAND || !event.hasBlock())
             return;
 
-        if(startBlocks.contains(event.getClickedBlock().getType().name().toLowerCase()))
+        // Ready block(s)
+        if(readyBlocks.contains(event.getClickedBlock().getType().name().toLowerCase()))
             handleReadyBlock(p);
-        /*
-        // Iron block
-        if (event.getClickedBlock().getType() == Material.IRON_BLOCK) {
-            handleReadyBlock(p);
-        }
 
-        // End rod
-        if (event.getClickedBlock().getType() == Material.END_ROD) {
-            handleReadyBlock(p);
-        }
-
-        // Candle
-        if (event.getClickedBlock().getType() == Material.PURPLE_CANDLE) {
-            handleReadyBlock(p);
-        }
-        */
         // Sign
         else if (event.getClickedBlock().getState() instanceof Sign) {
             Sign sign = (Sign) event.getClickedBlock().getState();
