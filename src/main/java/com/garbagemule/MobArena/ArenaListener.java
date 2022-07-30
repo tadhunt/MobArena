@@ -409,12 +409,7 @@ public class ArenaListener
 
         // Allow player to use spawn eggs
         if (reason == SpawnReason.SPAWNER_EGG) {
-            if (eggSpawns.contains(event.getEntityType().name().toLowerCase())) {
-                event.setCancelled(false);
-                monsters.addMonster(event.getEntity());
-            } else {
-                event.setCancelled(true);
-            }
+            event.setCancelled(!eggSpawns.contains(event.getEntityType().name().toLowerCase()));
             return;
         }
 
@@ -811,11 +806,7 @@ public class ArenaListener
         }
         else if (monsters.getMonsters().contains(damager)) {
             if (!monsterInfight) {
-                if (damager.getType() == EntityType.PUFFERFISH) {
-                    event.setCancelled(false);
-                } else {
-                    event.setCancelled(true);
-                }
+                event.setCancelled(!eggSpawns.contains(damager.getType().name().toLowerCase()));
             }
         }
     }
