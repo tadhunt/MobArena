@@ -152,18 +152,18 @@ public class ArenaListener
         this.useClassChests   = s.getBoolean("use-class-chests",     false);
 
         String eggList = s.getString("egg-spawn-able");
-        if(eggList != null){
+        if (eggList != null) {
             this.eggSpawns = Arrays.asList(eggList.replaceAll("\\s+", "").split(","));
         }
-        else{
+        else {
             this.eggSpawns = new ArrayList<>();
         }
 
         String blockList = s.getString("ready-blocks");
-        if(blockList != null){
+        if (blockList != null) {
             this.readyBlocks = Arrays.asList(blockList.replaceAll("\\s+","").split(","));
         }
-        else{
+        else {
             this.readyBlocks = new ArrayList<>();
         }
 
@@ -1135,7 +1135,7 @@ public class ArenaListener
             return;
 
         // Ready block(s)
-        if(readyBlocks.contains(event.getClickedBlock().getType().name().toLowerCase()))
+        if (readyBlocks.contains(event.getClickedBlock().getType().name().toLowerCase()))
             handleReadyBlock(p);
 
         // Sign
