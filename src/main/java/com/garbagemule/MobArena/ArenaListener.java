@@ -134,7 +134,7 @@ public class ArenaListener
 
     private HashMap<Integer, Player> lastKnownPlayerTargets;
 
-    private List<String> readyBlocks;
+    private List<String> readyBlocks, eggSpawns;
 
     public ArenaListener(Arena arena, MobArena plugin) {
         this.plugin = plugin;
@@ -158,6 +158,7 @@ public class ArenaListener
         this.autoIgniteFuse   = s.getInt("auto-ignite-fuse",         80);
         this.useClassChests   = s.getBoolean("use-class-chests",     false);
 
+        this.eggSpawns = Arrays.asList(s.getString("egg-spawn-able").replaceAll("\\s+", "").split(","));
         this.readyBlocks = Arrays.asList(s.getString("ready-blocks").replaceAll("\\s+","").split(","));
 
         this.classLimits = arena.getClassLimitManager();
@@ -400,9 +401,9 @@ public class ArenaListener
             return;
         }
 
-        // Allow player to use pufferfish spawn eggs
+        // Allow player to use spawn eggs
         if (reason == SpawnReason.SPAWNER_EGG) {
-            if (event.getEntityType() == EntityType.PUFFERFISH) {
+            if (eggSpawns.contains(event.getEntityType().name().toLowerCase())) {
                 event.setCancelled(false);
                 monsters.addMonster(event.getEntity());
             } else {

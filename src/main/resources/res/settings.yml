@@ -51,3 +51,4 @@ global-join-announce: false
 global-end-announce: false
 show-death-messages: true
 ready-blocks: iron_block, gold_block
+egg-spawn-able: pufferfish
