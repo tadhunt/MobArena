@@ -95,14 +95,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.projectiles.ProjectileSource;
 
-import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 public class ArenaListener
 {
@@ -158,8 +151,21 @@ public class ArenaListener
         this.autoIgniteFuse   = s.getInt("auto-ignite-fuse",         80);
         this.useClassChests   = s.getBoolean("use-class-chests",     false);
 
-        this.eggSpawns = Arrays.asList(s.getString("egg-spawn-able").replaceAll("\\s+", "").split(","));
-        this.readyBlocks = Arrays.asList(s.getString("ready-blocks").replaceAll("\\s+","").split(","));
+        String eggList = s.getString("egg-spawn-able");
+        if(eggList != null){
+            this.eggSpawns = Arrays.asList(eggList.replaceAll("\\s+", "").split(","));
+        }
+        else{
+            this.eggSpawns = new ArrayList<>();
+        }
+
+        String blockList = s.getString("ready-blocks");
+        if(blockList != null){
+            this.readyBlocks = Arrays.asList(blockList.replaceAll("\\s+","").split(","));
+        }
+        else{
+            this.readyBlocks = new ArrayList<>();
+        }
 
         this.classLimits = arena.getClassLimitManager();
 
