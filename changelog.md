@@ -11,6 +11,8 @@ These changes will (most likely) be included in the next version.
 
 
 ## [Unreleased]
+
+## [0.107] - 2022-07-30
 ### Added
 - New monster variant `angry-bees` can be used to spawn angry bees.
 - Husks, drowned, piglins, hoglins, and zoglins can now be spawned in their baby versions using the `baby` prefix seen on other monster types (e.g. `baby-zombie`).
@@ -25,7 +27,7 @@ These changes will (most likely) be included in the next version.
 - (API) MobArena now fires MobArenaPreReloadEvent and MobArenaReloadEvent before and after, respectively, reloading its config-file. This should allow extensions and other plugins to better respond to configuration changes.
 
 ### Changed
-- MobArena now targets the Minecraft 1.17 version of the Spigot API (but still works on 1.13-1.16). This should make it easier to tackle feature requests and bug reports related to modern Minecraft.
+- MobArena now targets the Minecraft 1.19 version of the Spigot API (but still works on 1.13-1.18). This should make it easier to tackle feature requests and bug reports related to modern Minecraft.
 - Monsters are no longer stripped of the _weapons_ they spawn with naturally, only their _armor_. This should improve forwards compatibility with new weapon-reliant monsters.
 - The regex pattern for the player list command is now less greedy, so it will only match on `/ma players`, `/ma playerlist`, and `/ma player-list`. The previous pattern matched on anything that starts with `player`, which rendered the `/ma player-stats` command in MobArenaStats impossible to invoke.
 
@@ -33,6 +35,7 @@ These changes will (most likely) be included in the next version.
 - Pillagers and vindicators no longer spawn without their much-needed weapons.
 - Piglins, piglin brutes, and hoglins no longer zombify. This fixes a bug where the mobs would despawn due to the zombification process.
 - Zombies, husks, drowned, zombie villagers, piglins, hoglins, and zoglins without the `baby` prefix are now forced into adulthood to prevent them from occasionally spawning as babies.
+- Evokers are once again capable of spawning vexes on 1.18.1+.
 - Reward groups with `nothing` in them no longer cause errors when earned/granted.
 - The title-based announcer and the title-based boss health bar have been fixed to work with the breaking change to the Title API in Spigot 1.17.
 - Arena Signs now correctly update for arenas that don't have `kebab-case` names in the config-file. 
@@ -40,6 +43,8 @@ These changes will (most likely) be included in the next version.
 - Flaming arrows now ignite TNT blocks in the arena.
 - Players no longer take fall damage when they leave (or get removed from) an arena while falling.
 - Players no longer take damage from projectiles shot by pets of other players.
+- Normal shulker boxes are now properly removed from inventories of players using the My Items class.
+- Class pets are now correctly removed from the arena when their owner dies, rather than when they leave.
 - MobArena no longer nags players with the `mobarena.admin.teleport` permission when they engage in a teleport that would have otherwise been blocked.
 - MobArena now correctly sets the source property on auto-ignited TNT.
 
@@ -244,7 +249,8 @@ Thanks to:
 - Swatacular for help with testing bug fixes
 - Haileykins for contributions to the code base
 
-[Unreleased]: https://github.com/garbagemule/MobArena/compare/0.106...HEAD
+[Unreleased]: https://github.com/garbagemule/MobArena/compare/0.107...HEAD
+[0.107]: https://github.com/garbagemule/MobArena/compare/0.106...0.107
 [0.106]: https://github.com/garbagemule/MobArena/compare/0.105...0.106
 [0.105]: https://github.com/garbagemule/MobArena/compare/0.104.2...0.105
 [0.104.2]: https://github.com/garbagemule/MobArena/compare/0.104.1...0.104.2
