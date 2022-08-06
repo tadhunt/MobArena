@@ -31,6 +31,7 @@ import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.AnimalTamer;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Horse;
@@ -753,7 +754,6 @@ public class ArenaListener
             }
             event.setCancelled(false);
             arena.getArenaPlayer(player).getStats().add("dmgTaken", event.getDamage());
-
             // Redirect pet aggro (but not at players)
             if (damager instanceof LivingEntity && !(damager instanceof Player)) {
                 LivingEntity target = (LivingEntity) damager;
@@ -765,6 +765,9 @@ public class ArenaListener
                         }
                     }
                 });
+            }
+            if(damager instanceof Creeper && damager.isGlowing()){
+                player.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 1, 2));
             }
         }
     }
