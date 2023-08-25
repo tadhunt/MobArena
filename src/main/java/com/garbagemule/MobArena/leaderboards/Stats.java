@@ -4,7 +4,7 @@ public enum Stats
 {
     PLAYER_NAME("Players", "playerName"),
     CLASS_NAME("Class", "class"),
-    KILLS("Kills", "kills"),
+    KILLS("Mobs Defeated", "kills"),
     DAMAGE_DONE("Damage Done", "dmgDone"),
     DAMAGE_TAKEN("Damage Taken", "dmgTaken"),
     SWINGS("Swings", "swings"),

@@ -13,7 +13,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ScoreboardManager {
-    private static final String DISPLAY_NAME = ChatColor.GREEN + "Kills       " + ChatColor.AQUA + "Wave ";
+    private static final String DISPLAY_NAME = ChatColor.GREEN + "Mobs Defeated " + ChatColor.AQUA + "Wave ";
+//    private static final String DISPLAY_NAME = ChatColor.GREEN + "Kills       " + ChatColor.AQUA + "Wave ";
 
     private Arena arena;
     private Scoreboard scoreboard;
@@ -134,7 +135,7 @@ public class ScoreboardManager {
         if (kills != null) {
             kills.unregister();
         }
-        kills = scoreboard.registerNewObjective("kills", "ma-kills", "Kills");
+        kills = scoreboard.registerNewObjective("kills", "ma-kills", "Mobs Defeated");
         kills.setDisplaySlot(DisplaySlot.SIDEBAR);
         updateWave(0);
     }
