@@ -349,6 +349,8 @@ public class ArenaListener
             case SNOW:
                 event.setCancelled(true);
                 break;
+            default:
+                break;
         }
     }
 
@@ -373,6 +375,8 @@ public class ArenaListener
             case EXPLOSION:
             case LAVA:
                 event.setCancelled(true);
+                break;
+            default:
                 break;
         }
     }
@@ -436,6 +440,8 @@ public class ArenaListener
                 }
                 return;
             }
+            default:
+                break;
         }
 
         // If not custom, we probably don't want it, so get rid of it
