@@ -32,7 +32,7 @@
         <artifactId>maven-jar-plugin</artifactId>
         <version>3.2.0</version>
         <configuration>
-          <finalName>MobArena</finalName>
+          <finalName>${project.name-version}</finalName>
         </configuration>
       </plugin>
 
