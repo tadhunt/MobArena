@@ -27,9 +27,11 @@ jobs:
       - name: 'Build, test, and package'
         run: mvn -B package --file pom.xml
 
-      - name: 'Get version'
+      - name: 'Get artifact version'
         id:   pomVersion
-        uses: PERES-Richard/maven-get-version-action@v3.0.0
+        run: |
+          VERSION=$( mvn help:evaluate -Dexpression=project.version -q -DforceStdout )
+          echo "::set-output name=version::$VERSION"
 
       - name: 'Upload artifact'
         uses: actions/upload-artifact@v3
