@@ -28,8 +28,12 @@ jobs:
       - name: 'Build, test, and package'
         run: mvn -B package --file pom.xml
 
+      - name: 'Get Version'
+        uses: ./
+        id:   getVersion
+
       - name: 'Upload artifact'
         uses: actions/upload-artifact@v2
         with:
           name: MobArena.jar
-          path: target/MobArena.jar
+          path: target/MobArena-${{ steps.getVersion.outputs.version }}.jar
