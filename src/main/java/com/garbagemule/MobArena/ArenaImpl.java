@@ -87,7 +87,7 @@ public class ArenaImpl implements Arena
     private ConfigurationSection settings;
 
     // Run-time settings and critical config settings
-    private boolean enabled, protect, running, edit;
+    private boolean enabled, protect, running, edit, rejoin;
 
     // World stuff
     private boolean allowMonsters, allowAnimals;
@@ -165,6 +165,7 @@ public class ArenaImpl implements Arena
 
         this.enabled = settings.getBoolean("enabled", false);
         this.protect = settings.getBoolean("protect", true);
+        this.rejoin  = settings.getBoolean("rejoin", false);
         this.running = false;
         this.edit    = false;
 
@@ -487,7 +488,7 @@ public class ArenaImpl implements Arena
         announce(msg.toString());
     }
 
-    private boolean justAddReadyPlayers() {
+    private boolean addReadyPlayers() {
         for (Player p : readyPlayers) {
             lobbyPlayers.remove(p);
             arenaPlayers.add(p);
@@ -522,10 +523,15 @@ public class ArenaImpl implements Arena
                 price.takeFrom(p);
             }
 
+            monsterManager.getBossMonsters().forEach(entity -> {
+                MABoss boss = monsterManager.getBoss(entity);
+                if (boss != null) {
+                    boss.getHealthBar().addPlayer(p);
+                }
+            });
+
             scoreboard.removePlayer(p);
             scoreboard.addPlayer(p);
-
-            getMessenger().tell(p, "Maybe Rejoined?");
         }
 
         return true;
@@ -534,8 +540,8 @@ public class ArenaImpl implements Arena
     @Override
     public boolean startArena() {
         // Sanity-checks
-        if (running) {
-            return justAddReadyPlayers();
+        if (running && rejoin) {
+            return addReadyPlayers();
         }
 
         if (running || lobbyPlayers.isEmpty() || !readyPlayers.containsAll(lobbyPlayers)) {
@@ -1510,6 +1516,11 @@ public class ArenaImpl implements Arena
     }
 
     @Override
+    public boolean canRejoin() {
+        return rejoin;
+    }
+
+    @Override
     public String configName()
     {
         return name;
@@ -1629,10 +1640,8 @@ public class ArenaImpl implements Arena
             messenger.tell(p, Msg.JOIN_ARENA_EDIT_MODE);
         else if (arenaPlayers.contains(p) || lobbyPlayers.contains(p))
             messenger.tell(p, Msg.JOIN_ALREADY_PLAYING);
-        else if (running) {
-            return true;
-            //messenger.tell(p, Msg.JOIN_ARENA_IS_RUNNING);
-        }
+        else if (running && !rejoin)
+            messenger.tell(p, Msg.JOIN_ARENA_IS_RUNNING);
         else if (!hasPermission(p))
             messenger.tell(p, Msg.JOIN_ARENA_PERMISSION);
         else if (getMaxPlayers() > 0 && lobbyPlayers.size() >= getMaxPlayers())
