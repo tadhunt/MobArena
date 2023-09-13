@@ -51,6 +51,7 @@ public enum Msg {
     FORCE_END_EMPTY("No one is in the arena."),
     FORCE_END_ENDED("Forced arena end."),
     FORCE_END_IDLE("You weren't quick enough!"),
+    FORCE_END_WIN("Arena cleared, you win!"),
     REWARDS_GIVE("Here are all of your rewards!"),
     LOBBY_DROP_ITEM("No sharing allowed at this time!"),
     LOBBY_PLAYER_READY("You have been flagged as ready!"),

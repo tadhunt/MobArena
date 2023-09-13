@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @CommandInfo(
     name    = "force",
     pattern = "force",
-    usage   = "/ma force start|end (<arena>)",
+    usage   = "/ma force start|end|win (<arena>)",
     desc    = "force start or end an arena",
     permission = "mobarena.admin.force"
 )
@@ -57,6 +57,35 @@ public class ForceCommand implements Command
             // And end it!
             arena.forceEnd();
             am.getGlobalMessenger().tell(sender, Msg.FORCE_END_ENDED);
+            return true;
+        }
+
+        if (arg1.equals("win")) {
+            // With no arguments, end all.
+            if (arg2.equals("")) {
+                for (Arena arena : am.getArenas()) {
+                    arena.forceWin();
+                }
+                am.getGlobalMessenger().tell(sender, Msg.FORCE_END_WIN);
+                am.resetArenaMap();
+                return true;
+            }
+
+            // Otherwise, grab the arena in question.
+            Arena arena = am.getArenaWithName(arg2);
+            if (arena == null) {
+                am.getGlobalMessenger().tell(sender, Msg.ARENA_DOES_NOT_EXIST);
+                return true;
+            }
+
+            if (arena.getAllPlayers().isEmpty()) {
+                am.getGlobalMessenger().tell(sender, Msg.FORCE_END_EMPTY);
+                return true;
+            }
+
+            // And end it!
+            arena.forceWin();
+            am.getGlobalMessenger().tell(sender, Msg.FORCE_END_WIN);
             return true;
         }
 

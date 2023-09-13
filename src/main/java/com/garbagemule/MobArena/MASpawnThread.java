@@ -50,6 +50,7 @@ public class MASpawnThread implements Runnable
     private int waveInterval;
     private int nextWaveDelay;
     private long monsterGlowDelay;
+    private boolean endArenaAfterFinalWave;
 
     private BukkitTask task;
 
@@ -87,6 +88,7 @@ public class MASpawnThread implements Runnable
         waveInterval = arena.getSettings().getInt("wave-interval", 3);
         nextWaveDelay = arena.getSettings().getInt("next-wave-delay", 0);
         monsterGlowDelay = arena.getSettings().getLong("monster-glow-delay", 0L);
+        endArenaAfterFinalWave = arena.getSettings().getBoolean("end-arena-after-final-wave", true);
     }
 
     public void start() {
@@ -157,25 +159,31 @@ public class MASpawnThread implements Runnable
 
     private void spawnNextWave() {
         // Grab the wave number.
-        int nextWave = waveManager.getWaveNumber() + 1;
+        int lastWave = waveManager.getWaveNumber();
+        int nextWave = lastWave + 1;
 
         // Grant rewards (if any) for the wave that just ended
-        grantRewards(nextWave - 1);
+        grantRewards(lastWave);
 
         // Check if this is the final wave, in which case, end instead of spawn
-        if (nextWave > 1 && (nextWave - 1) == waveManager.getFinalWave()) {
-            // Fire the complete event
-            ArenaCompleteEvent complete = new ArenaCompleteEvent(arena);
-            plugin.getServer().getPluginManager().callEvent(complete);
+        if (nextWave > 1 && lastWave == waveManager.getFinalWave()) {
+            if (endArenaAfterFinalWave) {
+                // Fire the complete event
+                ArenaCompleteEvent complete = new ArenaCompleteEvent(arena);
+                plugin.getServer().getPluginManager().callEvent(complete);
 
-            // Then force leave everyone
-            List<Player> players = new ArrayList<>(arena.getPlayersInArena());
-            for (Player p : players) {
-                if (arena.getSettings().getBoolean("keep-exp", false)) {
-                    arena.getRewardManager().addReward(p, new ExperienceThing(p.getTotalExperience()));
+                // Then force leave everyone
+                List<Player> players = new ArrayList<>(arena.getPlayersInArena());
+                for (Player p : players) {
+                    if (arena.getSettings().getBoolean("keep-exp", false)) {
+                        arena.getRewardManager().addReward(p, new ExperienceThing(p.getTotalExperience()));
+                    }
+                    arena.playerLeave(p);
                 }
-                arena.playerLeave(p);
+            } else {
+                arena.announce(Msg.FORCE_END_WIN);
             }
+
             return;
         }
 

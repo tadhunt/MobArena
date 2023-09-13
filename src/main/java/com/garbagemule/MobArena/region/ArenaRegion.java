@@ -34,7 +34,7 @@ public class ArenaRegion
     private World world;
 
     private Location lastP1, lastP2, lastL1, lastL2;
-    private Location p1, p2, l1, l2, arenaWarp, lobbyWarp, specWarp, exitWarp, leaderboard;
+    private Location p1, p2, l1, l2, arenaWarp, winWarp, lobbyWarp, specWarp, exitWarp, leaderboard;
     private Map<String,Location> spawnpoints, containers;
 
     private boolean setup, lobbySetup;
@@ -79,6 +79,7 @@ public class ArenaRegion
     }
 
     public void reloadWarps() {
+        winWarp = parseLocation(coords, "win", world);
         arenaWarp = parseLocation(coords, "arena", world);
         lobbyWarp = parseLocation(coords, "lobby", world);
         specWarp  = parseLocation(coords, "spectator", world);
@@ -405,6 +406,10 @@ public class ArenaRegion
 
     public Location getArenaWarp() {
         return arenaWarp;
+    }
+
+    public Location getWinWarp() {
+        return winWarp;
     }
 
     public Location getLobbyWarp() {

@@ -10,6 +10,7 @@ import com.garbagemule.MobArena.steps.Step;
 import com.garbagemule.MobArena.steps.StepFactory;
 import com.garbagemule.MobArena.steps.PlayerJoinArena;
 import com.garbagemule.MobArena.steps.PlayerSpecArena;
+import com.garbagemule.MobArena.events.ArenaCompleteEvent;
 import com.garbagemule.MobArena.events.ArenaEndEvent;
 import com.garbagemule.MobArena.events.ArenaPlayerDeathEvent;
 import com.garbagemule.MobArena.events.ArenaPlayerJoinEvent;
@@ -22,6 +23,7 @@ import com.garbagemule.MobArena.region.ArenaRegion;
 import com.garbagemule.MobArena.repairable.Repairable;
 import com.garbagemule.MobArena.repairable.RepairableComparator;
 import com.garbagemule.MobArena.repairable.RepairableContainer;
+import com.garbagemule.MobArena.things.ExperienceThing;
 import com.garbagemule.MobArena.things.InvalidThingInputString;
 import com.garbagemule.MobArena.things.Thing;
 import com.garbagemule.MobArena.things.ThingPicker;
@@ -504,14 +506,14 @@ public class ArenaImpl implements Arena
 
             movingPlayers.add(p);
             if (arenaWarpOffset > 0.01) {
-                Location warp = region.getArenaWarp();
+                Location warp = region.getWinWarp();
                 double x = warp.getX() + (arenaWarpOffset * 2 * (Math.random() - 0.5));
                 double y = warp.getY();
                 double z = warp.getZ() + (arenaWarpOffset * 2 * (Math.random() - 0.5));
                 Location offset = new Location(warp.getWorld(), x, y, z);
                 p.teleport(offset);
             } else {
-                p.teleport(region.getArenaWarp());
+                p.teleport(region.getWinWarp());
             }
             movingPlayers.remove(p);
 
@@ -648,6 +650,10 @@ public class ArenaImpl implements Arena
 
     @Override
     public boolean endArena() {
+        return endArena(true);
+    }
+
+    private boolean endArena(boolean doAnnounce) {
         // Sanity-checks.
         if (!running || !arenaPlayers.isEmpty()) {
             return false;
@@ -676,14 +682,17 @@ public class ArenaImpl implements Arena
         stopSpawner();
         stopBouncingSheep();
 
-        // Announce and clean arena floor, etc.
-        if (settings.getBoolean("global-end-announce", false)) {
-            for (Player p : Bukkit.getOnlinePlayers()) {
-                messenger.tell(p, Msg.ARENA_END_GLOBAL, configName());
+        if(doAnnounce) {
+            // Announce and clean arena floor, etc.
+            if (settings.getBoolean("global-end-announce", false)) {
+                for (Player p : Bukkit.getOnlinePlayers()) {
+                    messenger.tell(p, Msg.ARENA_END_GLOBAL, configName());
+                }
+            } else {
+                announce(Msg.ARENA_END);
             }
-        } else {
-            announce(Msg.ARENA_END);
         }
+
         cleanup();
 
         // Restore region.
@@ -736,6 +745,38 @@ public class ArenaImpl implements Arena
 
         players.forEach(this::playerLeave);
         cleanup();
+    }
+
+    @Override
+    public void forceWin() {
+        ArenaCompleteEvent complete = new ArenaCompleteEvent(this);
+        plugin.getServer().getPluginManager().callEvent(complete);
+
+        List<Player> players = new ArrayList<>(getPlayersInArena());
+
+        // hack hack hack
+        arenaPlayers.clear();
+        endArena(false);
+
+        boolean keepExp = getSettings().getBoolean("keep-exp", false);
+        for (Player p : players) {
+            if (keepExp) {
+                getRewardManager().addReward(p, new ExperienceThing(p.getTotalExperience()));
+            }
+
+            movingPlayers.add(p);
+            Location warp = region.getWinWarp();
+            if (arenaWarpOffset > 0.01) {
+                double x = warp.getX() + (arenaWarpOffset * 2 * (Math.random() - 0.5));
+                double y = warp.getY();
+                double z = warp.getZ() + (arenaWarpOffset * 2 * (Math.random() - 0.5));
+                warp = new Location(warp.getWorld(), x, y, z);
+            }
+            p.teleport(warp);
+            movingPlayers.remove(p);
+//            playerLeave(p);
+        }
+//        cleanup();
     }
 
     @Override
