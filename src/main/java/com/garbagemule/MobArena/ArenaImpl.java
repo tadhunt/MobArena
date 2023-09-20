@@ -505,16 +505,14 @@ public class ArenaImpl implements Arena
             }
 
             movingPlayers.add(p);
+            Location warp = region.getArenaWarp();
             if (arenaWarpOffset > 0.01) {
-                Location warp = region.getArenaWarp();
                 double x = warp.getX() + (arenaWarpOffset * 2 * (Math.random() - 0.5));
                 double y = warp.getY();
                 double z = warp.getZ() + (arenaWarpOffset * 2 * (Math.random() - 0.5));
-                Location offset = new Location(warp.getWorld(), x, y, z);
-                p.teleport(offset);
-            } else {
-                p.teleport(region.getWinWarp());
+                warp = new Location(warp.getWorld(), x, y, z);
             }
+            p.teleport(warp);
             movingPlayers.remove(p);
 
             addClassPermissions(p);
