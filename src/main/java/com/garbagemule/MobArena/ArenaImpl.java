@@ -506,7 +506,7 @@ public class ArenaImpl implements Arena
 
             movingPlayers.add(p);
             if (arenaWarpOffset > 0.01) {
-                Location warp = region.getWinWarp();
+                Location warp = region.getArenaWarp();
                 double x = warp.getX() + (arenaWarpOffset * 2 * (Math.random() - 0.5));
                 double y = warp.getY();
                 double z = warp.getZ() + (arenaWarpOffset * 2 * (Math.random() - 0.5));
