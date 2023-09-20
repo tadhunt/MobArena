@@ -754,7 +754,6 @@ public class ArenaImpl implements Arena
 
         List<Player> players = new ArrayList<>(getPlayersInArena());
 
-        // hack hack hack
         arenaPlayers.clear();
         endArena(false);
 
@@ -774,9 +773,7 @@ public class ArenaImpl implements Arena
             }
             p.teleport(warp);
             movingPlayers.remove(p);
-//            playerLeave(p);
         }
-//        cleanup();
     }
 
     @Override
