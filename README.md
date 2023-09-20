@@ -1,4 +1,4 @@
-MobArena [![build](https://github.com/tadhunt/MobArena/actions/workflows/build.yml/badge.svg?branch=0.107.3-mcpd)](https://github.com/tadhunt/MobArena/actions/workflows/build.yml)
+MobArena [![build](https://github.com/tadhunt/MobArena/actions/workflows/build.yml/badge.svg?branch=0.107.4-mcpd)](https://github.com/tadhunt/MobArena/actions/workflows/build.yml)
 ========
 
 MobArena is an arena-style minigame for Spigot-based Minecraft servers
