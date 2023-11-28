@@ -1397,6 +1397,12 @@ public class ArenaImpl implements Arena
     }
 
     private void autoReady(Player p) {
+        if (running) {
+            // players joining while the game is running aren't automatically marked as ready
+            // so that they have a chance to pick a class.
+            return;
+        }
+
         if (settings.getBoolean("auto-ready", false)) {
             playerReady(p);
         }
